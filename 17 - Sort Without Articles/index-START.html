@@ -44,9 +44,11 @@
 
 <script>
   const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog']
+  // Clone, for no other reason than to reduce side effects.
   const clone = bands.map(e => e)
   const target = document.querySelector('#bands')
 
+  // What: Sort the names, ignoring the articles. Again, avoiding side effects.
   function sortWithoutArticles (a, b) {
     const equalizedA = a.replace(/^(the|an|a)\s/i, '')
     const equalizedB = b.replace(/^(the|an|a)\s/i, '')
@@ -60,6 +62,7 @@
     return 0
   }
 
+  // What: Write to the target element on the DOM, using a document fragment to avoid multiple writes to the DOM.
   function writeToDOM (target, contents = []) {
     const frag = document.createDocumentFragment()
 
@@ -73,7 +76,7 @@
 
     return target.appendChild(frag)
   }
-
+  // Since sort acts on the original array (by reference), I'm using as a lambda.
   writeToDOM(target, clone.sort(sortWithoutArticles))
 </script>
 
