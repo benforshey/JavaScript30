@@ -22,6 +22,7 @@
     }
 
     .panels {
+      display: flex;
       min-height:100vh;
       overflow: hidden;
     }
@@ -41,6 +42,11 @@
       font-size: 20px;
       background-size:cover;
       background-position:center;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
 
 
@@ -51,9 +57,29 @@
     .panel5 { background-image:url(https://source.unsplash.com/3MNzGlQM7qs/1500x1500); }
 
     .panel > * {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1 0 auto;
       margin:0;
       width: 100%;
-      transition:transform 0.5s;
+      transition: transform 0.5s;
+    }
+
+    .panel > *:first-child {
+      transform: translateY(-100%);
+    }
+
+    .panel.open-active > *:first-child {
+      transform: translateY(0);
+    }
+
+    .panel > *:last-child {
+      transform: translateY(100%);
+    }
+
+    .panel.open-active > *:last-child {
+      transform: translateY(0);
     }
 
     .panel p {
@@ -67,6 +93,7 @@
     }
 
     .panel.open {
+      flex: 5 0 auto;
       font-size:40px;
     }
 
@@ -107,7 +134,22 @@
   </div>
 
   <script>
+    const panels = [...document.querySelectorAll('.panel')]
+    console.log(panels)
 
+    function toggleOpen() {
+      return this.classList.toggle('open')
+    }
+
+    function toggleActive(e) {
+      console.log(e.propertyName)
+      if (e.propertyName === 'flex-grow' || e.propertyName === 'flex') {
+        this.classList.toggle('open-active')
+      }
+    }
+
+    panels.map(el => el.addEventListener('click', toggleOpen, false))
+    panels.map(el => el.addEventListener('transitionend', toggleActive, false))
   </script>
 
 

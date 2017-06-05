@@ -17,6 +17,48 @@
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+const cities = []
+const searchInput = document.querySelector('.search')
+const suggestions = document.querySelector('.suggestions')
+
+// Yay, fetch!
+fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => cities.push(...data))  // spread operator is like calling 'cities.push(data[0], data[1], etc)
+  // .then(data => data.map(e => cities.push(e)))  // slightly more verbose than the spread operator
+  .then(console.log(cities))
+
+function findMatches (wordToMatch, cities) {
+  return cities.filter(place => {
+    // Does the city or state match what was searched?
+    const regex = new RegExp(wordToMatch, 'gi')  // In this case the regexp is much better than '.includes()', because I don't want to take the extra step of formatting the array's data. The case-insensitive global search is awesome.
+    return place.city.match(regex)  || place.state.match(regex)
+  })
+}
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Borrowed, not reasoned.
+}
+
+function displayMatches () {
+  const matchArray = findMatches(this.value, cities)
+  const HTML = matchArray.map(place => {
+    const regex = new RegExp(this.value, 'gi')
+    const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`)  // Nice use of replace to dynamically insert a highlight.
+    const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`)
+    return `
+      <li>
+        <span class="name">${cityName}, ${stateName}</span>
+        <span class="population">${numberWithCommas(place.population)}</span>
+      </li>
+    `
+  }).join('')  // Join the array into a string
+  return suggestions.innerHTML = HTML
+}
+
+searchInput.addEventListener('change', displayMatches)
+searchInput.addEventListener('keyup', displayMatches)
+
 </script>
   </body>
 </html>

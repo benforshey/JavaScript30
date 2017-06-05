@@ -7,6 +7,20 @@
 </head>
 <body>
 <script>
+  const pressed = []
+  const code = 'password'
+
+  window.addEventListener('keyup', (e) => {
+    pressed.push(e.key)
+    // Negative numbers start from the end of the array; length - 1 for 0-based notation.
+    pressed.splice(-code.length -1, pressed.length - code.length)
+
+    if (pressed.join('').includes(code)) {
+      console.log("Secret Code Activated.")
+    }
+    console.log(pressed)
+
+  })
 </script>
 </body>
 </html>

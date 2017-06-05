@@ -17,6 +17,8 @@
   }
 
   .hero {
+    background: url(./jeremy-bishop-211453.jpg) center center no-repeat;
+    background-size: cover;
     min-height: 100vh;
     display:flex;
     justify-content: center;
@@ -25,12 +27,50 @@
   }
 
   h1 {
-    text-shadow: 10px 10px 0 rgba(0,0,0,1);
+    text-shadow: 5px 5px 0 red, -5px 5px 0 orange, 5px -5px 0 teal, -5px -5px 0 yellow;
+    mix-blend-mode: screen;
     font-size: 100px;
+    /*filter: blur(5px);*/
   }
   </style>
 
 <script>
+  const hero = document.querySelector('.hero')
+  const text = hero.querySelector('h1')
+  const range = 100
+
+  function shadow (e) {
+    // const width = hero.offsetWidth
+    // const height = hero.offsetHeight
+    // ES6 equiv
+    const { offsetWidth: width, offsetHeight: height } = hero
+    let { offsetX: x, offsetY: y } = e
+
+    // e.target changes, unlike this. 'mousemove' event makes offsetX & offsetY relative to the hero element unless the cursor hovers over that child, when it then reports the offsetX & offsetY relative to the child. Proof: console.log(this, e.target)
+    // Add the offset of the target to the event.
+    if (this !== e.target) {
+      x = x + e.target.offsetLeft
+      y = y + e.target.offsetTop
+    }
+
+    // For the math impaired (me):
+    // (x / width) and (y / height) are a fractional representation of your location along a two-dimensonal plane.
+    // You multiple (x / width) and (y / height) * range because that's how far you want to extend the shadow.
+    // You then subtract (range / 2) because you want a positive and negative range, centered on the plane. In other words, you could do (x / width) * (range / 2) and get only 0 to 50 (assuming range of 100). The text shadow would never go negative (left or up).
+    const xRange = Math.round((x / width * range) - (range / 2))
+    const xRangeAlt = Math.round((x / width) * (range / 2))
+    const yRange = Math.round((y / height * range) - (range / 2))
+    const yRangeAlt = Math.round((y / height) * (range / 2))
+
+    text.style.textShadow = `
+      ${xRange}px ${yRange}px 0 red,
+      ${xRangeAlt * -1}px ${yRangeAlt}px 0 orange,
+      ${xRangeAlt}px ${yRangeAlt * -1}px 0 teal,
+      ${xRange * -1}px ${yRange * -1}px 0 yellow
+    `
+  }
+
+  hero.addEventListener('mousemove', shadow)
 </script>
 </body>
 </html>

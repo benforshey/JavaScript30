@@ -43,9 +43,38 @@
   <ul id="bands"></ul>
 
 <script>
-const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog'];
+  const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog']
+  const clone = bands.map(e => e)
+  const target = document.querySelector('#bands')
 
+  function sortWithoutArticles (a, b) {
+    const equalizedA = a.replace(/^(the|an|a)\s/i, '')
+    const equalizedB = b.replace(/^(the|an|a)\s/i, '')
 
+    if (equalizedA < equalizedB) {
+      return -1
+    }
+    if (equalizedA > equalizedB) {
+      return 1
+    }
+    return 0
+  }
+
+  function writeToDOM (target, contents = []) {
+    const frag = document.createDocumentFragment()
+
+    contents.map((content) => {
+      const li = document.createElement('li')
+
+      li.textContent = content
+
+      return frag.appendChild(li)
+    })
+
+    return target.appendChild(frag)
+  }
+
+  writeToDOM(target, clone.sort(sortWithoutArticles))
 </script>
 
 </body>

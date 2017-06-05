@@ -58,6 +58,28 @@
       };
     }
 
+    const sliderImages = Array.from(document.querySelectorAll('.slide-in'))
+
+    function checkSlide (e) {
+      sliderImages.map(image => {
+        // Measing from the bottom of the viewport (scrollY + innerHeight), define slideInAt to be half the image height.
+        const slideInAt = (window.scrollY + window.innerHeight) - (image.offsetHeight / 2)
+        // Measure the bottom of each image relative to the document with offsetTop (because this element has no parent), adding the height of the image (to reach the bottom).
+        const imageBottom = image.offsetTop + image.offsetHeight
+        const isHalfShown = slideInAt > image.offsetTop
+        const isNotScrolledPast = window.scrollY < imageBottom
+
+        if (isHalfShown && isNotScrolledPast) {
+          image.classList.add('active')
+        } else {
+          image.classList.remove('active')
+        }
+        console.log(slideInAt, image.offsetTop)
+      })
+
+    }
+
+    window.addEventListener('scroll', debounce(checkSlide, 10, false))
   </script>
 
   <style>

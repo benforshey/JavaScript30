@@ -1,73 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JS + CSS Clock</title>
+<meta charset="UTF-8">
+<title>JS + CSS Clock</title>
 </head>
 <body>
 
 
-    <div class="clock">
-      <div class="clock-face">
-        <div class="hand hour-hand"></div>
-        <div class="hand min-hand"></div>
-        <div class="hand second-hand"></div>
+  <div class="clock">
+    <div class="clock-face">
+      <div class="marks">
+        <span>12</span>
+        <span>1&nbsp;</span>
+        <span>2&nbsp;</span>
+        <span>3&nbsp;</span>
+        <span>4&nbsp;</span>
+        <span>5&nbsp;</span>
+        <span>6&nbsp;</span>
+        <span>7&nbsp;</span>
+        <span>8&nbsp;</span>
+        <span>9&nbsp;</span>
+        <span>10&nbsp;</span>
+        <span>11&nbsp;</span>
       </div>
+      <div class="hinge"></div>
+      <div class="hand hour-hand"></div>
+      <div class="hand min-hand"></div>
+      <div class="hand second-hand"></div>
     </div>
+  </div>
 
 
-  <style>
-    html {
-      background:#018DED url(http://unsplash.it/1500/1000?image=881&blur=50);
-      background-size:cover;
-      font-family:'helvetica neue';
-      text-align: center;
-      font-size: 10px;
+<style>
+  html {
+    background:#018DED url(http://unsplash.it/1500/1000?image=881&blur=50);
+    background-size:cover;
+    font-family:'helvetica neue';
+    text-align: center;
+    font-size: 10px;
+  }
+
+  body {
+    font-size: 2rem;
+    display:flex;
+    flex:1;
+    min-height: 100vh;
+    align-items: center;
+  }
+
+  .clock {
+    width: 30rem;
+    height: 30rem;
+    border:20px solid white;
+    border-radius:50%;
+    margin:50px auto;
+    position: relative;
+    padding:2rem;
+    box-shadow:
+      0 0 0 4px rgba(0,0,0,0.1),
+      inset 0 0 0 3px #EFEFEF,
+      inset 0 0 10px black,
+      0 0 10px rgba(0,0,0,0.2);
+  }
+
+  .clock-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-3px); /* account for the height of the clock hands */
+  }
+
+  .marks span {
+    font-family: monospace;
+    left: -4rem;
+    height: 38rem;
+    position: absolute;
+    text-align: center;
+    top: -3.8rem;
+    transform-origin: center;
+    width: 38rem;
+  }
+
+  .marks > span:nth-child(2) {
+    transform: rotate(30deg)
+  }
+  .marks > span:nth-child(3) {
+    transform: rotate(60deg)
+  }
+  .marks > span:nth-child(4) {
+    transform: rotate(90deg)
+  }
+  .marks > span:nth-child(5) {
+    transform: rotate(120deg)
+  }
+  .marks > span:nth-child(6) {
+    transform: rotate(150deg)
+  }
+  .marks > span:nth-child(7) {
+    transform: rotate(180deg)
+  }
+  .marks > span:nth-child(8) {
+    transform: rotate(210deg)
+  }
+  .marks > span:nth-child(9) {
+    transform: rotate(240deg)
+  }
+  .marks > span:nth-child(10) {
+    transform: rotate(270deg)
+  }
+  .marks > span:nth-child(11) {
+    transform: rotate(300deg)
+  }
+  .marks > span:nth-child(12) {
+    transform: rotate(330deg)
+  }
+
+  .hand {
+    width:50%;
+    height:6px;
+    background: linear-gradient(to left, white 90%, black 91%);
+    position: absolute;
+    top:50%;
+    transform-origin: 100%;  /* along the x axis, set the point for the transforms to the far right of the div */
+    transform: rotate(90deg);  /* set the hands to start at 12 o'clock */
+  }
+
+  .hour-hand {
+    background: linear-gradient(to left, white 75%, black 75%, black 85%, rgba(0,0,0,0) 85%);
+  }
+
+  .tick {
+    transition: transform 0.05s;
+    transition-timing-function: cubic-bezier(0.1, 2.5, .5, 1);  /* give the clock a tick (remove to have a smooth clock motion */
+  }
+
+  .hinge {
+    background: black;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: calc(50% - 3px);
+    right: calc(50% - 6px);
+    z-index: 1;
+  }
+
+</style>
+
+<script>
+  const clockHands = {
+    second: document.querySelector('.second-hand'),
+    minute: document.querySelector('.min-hand'),
+    hour: document.querySelector('.hour-hand')
+  }
+
+  const timeToDegrees = function (unit, base) {  // convert the unit of time to a degree, adjusting for an original offset
+    return ((unit / base) * 360) + 90 // offset by 90deg to adjust for the initial rotation require to set hands to vertical default position
+  }
+
+  const rotateHands = function (hand, degrees, unit) {
+    if (unit !== 0) {  // prevent a 'bug' where the transition loops around counter-clockwise to start back at zero
+      hand.classList.add('tick')
+    } else {
+      hand.classList.remove('tick')
     }
+    return hand.style.transform = `rotate(${degrees}deg)`  // rotate the thing
+  }
 
-    body {
-      font-size: 2rem;
-      display:flex;
-      flex:1;
-      min-height: 100vh;
-      align-items: center;
-    }
+  const setDate = function () {
+    const now = new Date()
+    const seconds = now.getSeconds()
+    const minutes = now.getMinutes()
+    const hours = now.getHours()
 
-    .clock {
-      width: 30rem;
-      height: 30rem;
-      border:20px solid white;
-      border-radius:50%;
-      margin:50px auto;
-      position: relative;
-      padding:2rem;
-      box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
-        inset 0 0 0 3px #EFEFEF,
-        inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
-    }
+    const secondsAsDegrees = timeToDegrees(seconds, 60)
+    const minutesAsDegrees = timeToDegrees(minutes, 60)
+    const hoursAsDegrees = timeToDegrees(hours, 12)
 
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
-    }
+    rotateHands(clockHands.second, secondsAsDegrees, seconds)
+    rotateHands(clockHands.minute, minutesAsDegrees, minutes)
+    rotateHands(clockHands.hour, hoursAsDegrees, hours)
 
-    .hand {
-      width:50%;
-      height:6px;
-      background:black;
-      position: absolute;
-      top:50%;
-    }
+    return setTimeout(setDate, 1000)
+  }
 
-  </style>
-
-  <script>
-
-
-  </script>
+  setDate()
+</script>
 </body>
 </html>

@@ -31,28 +31,66 @@
 
     // Array.prototype.filter()
     // 1. Filter the list of inventors for those who were born in the 1500's
+    const born1500s = inventors.filter(e => e.year > 1499 && e.year < 1600)
+    console.table(born1500s)
 
     // Array.prototype.map()
     // 2. Give us an array of the inventors' first and last names
+    const firstAndLastName = inventors.map(e => `${e.first} ${e.last}`)
+    console.log(firstAndLastName)
 
     // Array.prototype.sort()
     // 3. Sort the inventors by birthdate, oldest to youngest
+    const orderOfBirth = inventors.sort((a, b) => a.year - b.year)  // array.sort() operates interally by 'less than 0 means move to lesser index in array', '0 means leave it', 'greater than 0 means move to greater index in array'; you don't just have to return -1, 0, or 1
+    console.table(orderOfBirth)
 
     // Array.prototype.reduce()
     // 4. How many years did all the inventors live?
+    const totalYearsLived = inventors.reduce((prev, curr ) => {
+      return prev + (curr.passed - curr.year)
+    }, 0)
+    console.log(totalYearsLived)
 
     // 5. Sort the inventors by years lived
+    const sortedByLifespan = inventors.sort((a, b) => (a.passed - a.year) - (b.passed - b.year))  // to reverse order (greatest to least), change the order of subtraction (a - b vs b - a)
+    console.table(sortedByLifespan)
 
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
+    // const category = document.querySelector('.mw-category')
+    // const links = [...(category.querySelectorAll('a'))]  // done just to remind me that querselector... can be called on elements as well as the document.
+
+    // const deInName = links
+    //   .filter(e => e.textContent.includes('de'))
+    //   .map(e => e.textContent)
 
 
     // 7. sort Exercise
     // Sort the people alphabetically by last name
+    // const sortedByLastName = people.sort((a, b) => {
+      // return a.split(',')[1].toUpperCase() > b.split(',')[1].toUpperCase() ? -1 : 1
+    // })
+    sortedByLastName = people
+      .map((e) => {
+        const fullName = e.split(', ')
+        // Widly unnecessary string manipulation (targeted at Unicode string sorting quirks), since all my known data is neatly title cased. I'm just writing for different test cases.
+        const titleCaseLastName = e.charAt(0).toUpperCase() + fullName[0].trim().substring(1)
+        return `${titleCaseLastName} ${fullName[1].trim()}`
+      })
+      .sort((a, b) => a > b ? 1 : -1 )
+    console.log(sortedByLastName)
 
     // 8. Reduce Exercise
     // Sum up the instances of each of these
     const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck' ];
+    const transportation = data.reduce((object, item) => {
+      if (!object[item]) {  // if our initial / returned object doesn't contain the item, create it
+        object[item] = 0
+      }
+      object[item]++  // iterate the object key's item
+      return object
+    }, {})
+    console.log(transportation)
 
   </script>
 </body>

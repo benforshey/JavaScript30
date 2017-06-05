@@ -5,10 +5,87 @@
   <title>HTML5 Canvas</title>
 </head>
 <body>
-<canvas id="draw" width="800" height="800"></canvas>
+  <!-- Default with: 300px. Default height: 150px. -->
+  <canvas></canvas>
 <script>
-</script>
+  const canvas = document.getElementsByTagName('canvas')[0]
+  const ctx = canvas.getContext('2d')
+  const options = {
+    isDrawing: false,
+    startX: 0,
+    startY: 0,
+    hue: 0,
+    growing: true
+  }
 
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+
+
+  ctx.strokeStyle = `hsl(${options.hue}, 100%, 50%)`  // Set the color initially.
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  ctx.lineWidth = 10
+  ctx.globalCompositeOperation = 'hue'  // You're gonna have to reference the docs for this one, boss man. Like blend modes in Photoshop, though.
+
+  const draw = function draw (e) {
+    // Stop the function from running when the conditions are not met (set in event listeners).
+    if (!options.isDrawing) {
+      return
+    }
+
+    ctx.beginPath()  // Start a new path
+    ctx.moveTo(options.startX, options.startY)  // ...from the start point
+    ctx.lineTo(e.offsetX, e.offsetY)  // ...to the cursor
+    ctx.stroke()  // ...and draw it.
+
+    const manageHue = function manageHue () {
+      // Reset the hue (0 to 360) or increment.
+      if (options.hue >= 360) {
+        options.hue = 0
+      } else {
+        options.hue++
+      }
+      return ctx.strokeStyle = `hsl(${options.hue}, 100%, 50%)`  // Set the hue.
+    }
+
+    if (ctx.lineWidth >= 70 || ctx.lineWidth <= 9) {  // Set an initial range for lineWidth.
+      options.growing = !options.growing  // Make it the opposite of what it is: scale up or down.
+    }
+
+    options.growing ? ctx.lineWidth++ : ctx.lineWidth--
+    // Update the position of the cursor, since this is being called on 'mousemove'.
+    // ctx.strokeStyle = `hsl(${options.hue}, 100%, 50%)`
+    manageHue()
+    return (
+      options.startX = e.offsetX,
+      options.startY = e.offsetY
+    )
+  }
+
+
+  // Draw when clicked, setting the start point of the canvas draw to the x / y within the canvas (offsetX & offsetY respects padding of element).
+  canvas.addEventListener('mousedown', (e) => {
+    return (
+      options.isDrawing = true,
+      options.startX = e.offsetX,
+      options.startY = e.offsetY
+    )
+  })
+  // Draw when moving (and other conditions in draw function met).
+  canvas.addEventListener('mousemove', draw)
+  // Do not draw when the mouse is not down.
+  canvas.addEventListener('mouseup', () => options.isDrawing = false)
+  // Stop drawing when the mouse leaves the canvas.
+  canvas.addEventListener('mouseout', () => options.isDrawing = false)
+  // Keep the canvas the same size as the window.
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    console.log(canvas.width)
+  })
+
+</script>
 <style>
   html, body {
     margin:0;

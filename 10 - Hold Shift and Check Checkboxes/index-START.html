@@ -104,6 +104,84 @@
   </div>
 
 <script>
+  // 16 is shift
+
+  const field = document.querySelector('.inbox')
+  const checkboxes = Array.from(field.querySelectorAll('input[type=checkbox]'))
+  const lastTwoClicks = {
+    oldest: null,
+    latest: null
+  }
+
+  // What: Find the actual checkbox when a qualified sibling or parent element is clicked. Assumes that it is in selecting from the "field" of checkboxes.
+  // How: Contitionally find the actual checkbox. Expects to be limited to the field of checkboxes, but will find a checkbox in a <p> sibiling or <div> parent, for instance.
+  const findChecboxInDOM = function findChecboxInDOM (target) {
+    const checkbox = []
+    if (target.nodeName === 'INPUT') {
+      checkbox[0] = target
+    } else if (target.nodeName === 'DIV') {
+      checkbox[0] = target.querySelector('input[type=checkbox]')
+    } else if (target.nodeName === 'P') {
+      checkbox[0] = target.parentElement.querySelector('input[type=checkbox]')
+    } else {
+      throw new Error('A checkbox cannot be found within the clicked element.')
+    }
+    return checkbox[0]
+  }
+
+  // What: Clicks on adjacent / parent elements (what should be a label) should also trigger the checkbox.
+  // How: Only programmatically manipulate the checkbox the clicked element isn't already a checkbox.
+  const nativeLabelFunctionality = function nativeLabelFunctionality (target) {
+    if (target.nodeName !== 'INPUT') {
+      const checkbox = findChecboxInDOM(target)
+      checkbox.checked = !checkbox.checked
+    }
+    return
+  }
+
+  // What: Finds the index of a checkbox within all of the checkboxes stored in the checkboxes variable.
+  const indexOfCheckbox = function indexOfCheckbox (target) {
+    const index = []
+    if (target.nodeName !== 'INPUT') {
+      const checkbox = findChecboxInDOM(target)
+      index[0] = checkboxes.indexOf(checkbox)
+    } else {
+      index[0] = checkboxes.indexOf(target)
+    }
+    return index[0]
+  }
+
+  // What: Record the last two clicked elements. It stores the elements, not the index of those elements.
+  // How: First put the new in the old, then the new in the new.
+  const recordLastTwoClicks = function recordLastTwoClicks (target) {
+    if (lastTwoClicks.latest) {
+      lastTwoClicks.oldest = lastTwoClicks.latest
+    }
+    lastTwoClicks.latest = target
+    return
+  }
+
+  field.addEventListener('click', function (e) {
+    nativeLabelFunctionality(e.target)
+    recordLastTwoClicks(findChecboxInDOM(e.target))
+
+    // If there's an oldest, there have been at least two clicks. Only run if the shift key is down when clicked.
+    if (lastTwoClicks.oldest && e.shiftKey) {
+      // Get the indexes of the last two clicked checkboxes, putting them into an array and sorting them.
+      const indexes = [[indexOfCheckbox(lastTwoClicks.latest)], [indexOfCheckbox(lastTwoClicks.oldest)]].sort()
+
+      // Get the checkboxes in the range to be selected.
+      const selectedSlice = checkboxes.slice(indexes[0], indexes[1])
+      // Check them.
+      selectedSlice.map((checkbox) => {
+        checkbox.checked = true
+        return checkbox
+      })
+    }
+
+    return
+  })
+
 </script>
 </body>
 </html>

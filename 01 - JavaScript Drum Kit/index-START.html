@@ -58,7 +58,46 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+const keys = Array.from(document.querySelectorAll('.key'))
 
+const parseKeypress = function (e) {
+  const audio = document.querySelector(`audio[data-key="${e.keyCode}"`)
+  const key = document.querySelector(`div[data-key="${e.keyCode}"`)
+
+  return playSound(audio, key)  // play the sound
+}
+
+const parseClick = function (e) {
+  const keyCode = e.target.dataset.key || e.target.parentElement.dataset.key
+  const audio = document.querySelector(`audio[data-key="${keyCode}"`)
+  const key = document.querySelector(`div[data-key="${keyCode}"`)
+
+  return playSound(audio, key)  // play the sound
+}
+
+const playSound = function (audio, key) {
+  if (!audio) {  // return if key that was pressed isn't associated with a sound
+    return
+  }
+
+  audio.currentTime = 0  // reset the audio file, so that keys can be pressed before the audio file is finished playing
+
+  key.classList.add('playing')  // add the visual effect to the pressed key
+  return audio.play()  // play the audio effect
+}
+
+const removeTransition = function (e) {
+  if (e.propertyName !== 'transform') {  // return if the transition ending isn't transform
+    return
+  }
+
+  return this.classList.remove('playing')
+}
+
+/* EVENT LISTENERS */
+window.addEventListener('keydown', parseKeypress)  // event for key press
+keys.map(el => el.addEventListener('click', parseClick))  // event for click
+keys.map(el => el.addEventListener('transitionend', removeTransition))  // trigger on CSS transition ending
 </script>
 
 

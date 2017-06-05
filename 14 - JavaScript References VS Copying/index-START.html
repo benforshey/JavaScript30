@@ -8,13 +8,28 @@
 
   <script>
     // start with strings, numbers and booleans
+    let age = 100
+    let age2 = age
+    console.log(age, age2)
+    age = 200
+    console.log(age, age2)
+
+    let name = "Ben"
+    let name2 = name
+    console.log(name, name2)
+    name = 'Benjamin'
+    console.log(name, name2)
+    // note: The above are immutable data structures. When you reassign the value of a variable, you destroy and create anew.
 
     // Let's say we have an array
     const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
 
     // and we want to make a copy of it.
-
+    const team = players
+    // console.log(players, team)
     // You might think we can just do something like this:
+    team[3] = 'Ben'
+    // console.log(team, players)
 
     // however what happens when we update that array?
 
@@ -24,17 +39,43 @@
 
     // Why? It's because that is an array reference, not an array copy. They both point to the same array!
 
-    // So, how do we fix this? We take a copy instead!
-
+    // So, how do we fix this? We take a copy (slice) instead!
+    const team2 = players.slice()  // Copy
     // one day
 
     // or create a new array and concat the old one in
+    const team3 = [].concat(players)  // Copy
 
     // or use the new ES6 Spread
+    const team4 = [...players]
+
+    // or map
+    const team5 = players.map(player => player)  // Copy
+
+    // or Array.from()
+    const team6 = Array.from(players)
 
     // now when we update it, the original one isn't changed
+    team2[2] = 'Susi'
+    team3[1] = 'Gracie'
+    team4[0] = 'Violet'
+    team5[0] = 'Violet'
+    team5[1] = 'Gracie'
+    team5[2] = 'Miles'
+    team5[3] = 'Susi'
+    team5[4] = 'Ben'
+
+    console.log(team, team2, team3, team4, team5)
 
     // The same thing goes for objects, let's say we have a person object
+    const person = {
+      name: 'Ben',
+      age: 32,
+      social: {
+        twitter: '@benforshey',
+        facebook: 'benforshey'
+      }
+    }
 
     // with Objects
 
@@ -45,6 +86,10 @@
     // We will hopefully soon see the object ...spread
 
     // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
+    // note: he uses Object.assign() here...
+
+    // Poor man's deep clone. Converting to string breaks all mutability away. Has nasty side effects of converting date to UTC (ISO8601) & keys that have method literals (function values).
+    const person2 = JSON.parse(JSON.stringify(person))
 
   </script>
 
