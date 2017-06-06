@@ -182,6 +182,33 @@
     </li>
   </ul>
 <script>
+  const timeNodes = Array.from(document.querySelectorAll('[data-time]'))
+
+  const seconds = timeNodes
+    .map(node => node.dataset.time)
+    .map(timeCode => {
+      // ES6 destructuring of the following:
+      // Split timecode at colon, into consts from array that .split returns.
+      // Parse that into a float, for arithmatic (not concatenation) following.
+      const [mins, secs] = timeCode.split(':').map(Number.parseFloat)
+
+      // Return in seconds.
+      return (mins * 60) + secs
+    })
+    // Reduce has accumulator, value as parameters.
+    .reduce((total, seconds) => total + seconds)
+
+  let secondsLeft = seconds
+  // Get the integer of how many hours (60 secs * 60 mins) remain.
+  const hours = Math.floor(secondsLeft / 3600)
+  // The modulo of seconds remaining after the hours of video playtime are accounted for.
+  secondsLeft = secondsLeft % 3600
+
+  // The modulo of seconds remaining after the minutes of video playtime (calculated after the hours...) are accounted for.
+  const mins = Math.floor(secondsLeft / 60)
+  secondsLeft = secondsLeft % 60
+
+  console.info(`Total Playback Time = ${hours}:${mins}:${secondsLeft}`)
 </script>
 </body>
 </html>
