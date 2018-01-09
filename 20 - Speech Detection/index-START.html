@@ -10,9 +10,38 @@
   </div>
 
 <script>
+  // Use unprefixed if possible. At time of writing, only webkit supports.
   window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition()
+  recognition.interimResults = true
+  // recognition.continuous = true
+
+  const words = document.querySelector('.words')
+  let p = document.createElement('p')
+  words.appendChild(p)
+
+  recognition.addEventListener('result', e => {
+    // Get the deeply nested transcript.
+    const transcript = Array.from(e.results)
+    .map(result => result[0])
+    .map(result => result.transcript)
+    .join('')
+
+    // Adds live text to the existing 'p' node.
+    p.textContent = transcript
 
 
+    // On the final write of the current result, make a new paragraph for the next input.
+    if (e.results[0].isFinal) {
+      p = document.createElement('p')
+      words.appendChild(p)
+    }
+
+  })
+
+  // In lieu of "recognition.continuous = true", which then conglomerates everything into one large array.
+  recognition.addEventListener('end', recognition.start)
+  recognition.start()
 </script>
 
 

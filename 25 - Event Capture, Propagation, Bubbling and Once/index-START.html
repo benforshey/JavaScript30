@@ -39,6 +39,22 @@
 
 <button></button>
 <script>
+  const divs = Array.from(document.querySelectorAll('div'))
+  const one = document.querySelector('.one')
+  const two = document.querySelector('.two')
+  const three = document.querySelector('.three')
+
+  function logText (e) {
+    // e.stopPropagation()
+
+    console.log(this.classList.value)
+  }
+
+  // with capture: true & e.stopPropagation, only the root event listener (.one) is triggered, because capture starts at DOM root and works toward child that triggered.
+  divs.map(div => div.addEventListener('click', logText, {
+    capture: false,
+    once: true  // perhaps useful in a shopping cart checkout situation
+  }))
 
 </script>
 </body>

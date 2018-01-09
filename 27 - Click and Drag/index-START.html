@@ -35,6 +35,42 @@
   </div>
 
 <script>
+  const slider = document.querySelector('.items')
+  const state = {
+    isDown: false,
+    startX: null,
+    scrollLeft: null
+  }
+
+  slider.addEventListener('mousedown', (e) => {
+    state.isDown = true
+    state.startX = e.pageX
+    state.scrollLeft = slider.scrollLeft
+
+    slider.classList.add('active')
+  })
+
+  slider.addEventListener('mouseleave', () => {
+    state.isDown = false
+
+    slider.classList.remove('active')
+  })
+
+  slider.addEventListener('mouseup', () => {
+    state.isDown = false
+
+    slider.classList.remove('active')
+  })
+
+  slider.addEventListener('mousemove', (e) => {
+    if (!state.isDown) return
+
+    const walk = e.pageX - state.startX
+    const multiplier = 1.25  // used make the dragging do more with each movement
+
+    slider.scrollLeft = state.scrollLeft - walk * multiplier
+  })
+
 </script>
 
   </body>

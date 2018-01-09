@@ -33,9 +33,66 @@
   </div>
 
 <script>
-  const holes = document.querySelectorAll('.hole');
-  const scoreBoard = document.querySelector('.score');
-  const moles = document.querySelectorAll('.mole');
+  const scoreBoard = document.querySelector('.score')
+  const holes = document.querySelectorAll('.hole')
+  const moles = Array.from(document.querySelectorAll('.mole'))
+
+  let lastHole
+  let timeUp
+  let score = 0
+
+  function randomTime (min, max) {
+    return Math.random() * (max - min) + min
+  }
+
+  function randomHole (holes) {
+    const idx = Math.floor(Math.random() * holes.length)  // Pick a random index.
+    const hole = holes[idx]
+
+    if (hole === lastHole) {  // Mole shouldn't pop up from the same hole twice.
+      return randomHole(holes)
+    }
+
+    lastHole = hole
+
+    return hole
+  }
+
+  function peep () {
+    const time = randomTime(200, 1000)
+    const hole = randomHole(holes)
+
+    hole.classList.add('up')
+
+    setTimeout(() => {
+      hole.classList.remove('up')
+
+      if (!timeUp) {
+        return peep()
+      }
+    }, time)
+  }
+
+  function startGame (duration = 10000) {
+    score = 0
+    scoreBoard.textContent = 0
+    timeUp = false
+    peep()
+
+    setTimeout(() => timeUp = true, duration);
+  }
+
+  function bonk (e) {
+    if (!e.isTrusted) {  // "e.isTrusted" happens when element is clicked on, not when a click is simulated.
+      return
+    }
+
+    score ++
+    this.classList.remove('up')
+    scoreBoard.textContent = score
+  }
+
+  moles.map(mole => mole.addEventListener('click', bonk))
 
 </script>
 </body>
